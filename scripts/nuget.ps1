@@ -41,6 +41,14 @@ function BuildEmbeddedNuget ($projectDir, $outDir, $serverSrcDir, $studioZipPath
     
     $NETSTANDARD_TARGET = "netstandard2.0"
     $NET461_TARGET = "net461"
+
+    $WinX64Target = @{
+        "Name"      = "windows-x64";
+        "Runtime"   = "win-x64";
+        "PkgType"   = "zip";
+        "IsUnix"    = $False;
+        "TargetId" = "win-x64";
+    }
     
     $EMBEDDED_LIB_OUT_DIR_NETSTANDARD = [io.path]::combine($EMBEDDED_OUT_DIR, "lib", "$NETSTANDARD_TARGET")
     $EMBEDDED_LIB_OUT_DIR_NET461 = [io.path]::combine($EMBEDDED_OUT_DIR, "lib", "$NET461_TARGET")
@@ -62,7 +70,7 @@ function BuildEmbeddedNuget ($projectDir, $outDir, $serverSrcDir, $studioZipPath
     BuildEmbedded $embeddedCsproj $EMBEDDED_LIB_OUT_DIR_NET461 $NET461_TARGET
     Remove-Item $(Join-Path $EMBEDDED_LIB_OUT_DIR_NET461 -ChildPath "*") -Exclude "Raven.Embedded.dll"
 
-    BuildServer $SERVER_SRC_DIR $EMBEDDED_SERVER_OUT_DIR $null $Debug
+    BuildServer $SERVER_SRC_DIR $EMBEDDED_SERVER_OUT_DIR $WinX64Target $Debug
     $tempServerDir = Join-Path $EMBEDDED_SERVER_OUT_DIR -ChildPath "Server"
     $serverDir = Join-Path $EMBEDDED_SERVER_OUT_DIR -ChildPath "RavenDBServer"
     Write-Host "Move $tempServerDir -> $serverDir"

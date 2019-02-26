@@ -19,7 +19,7 @@ namespace Raven.Embedded
             if (string.IsNullOrWhiteSpace(options.LogsPath))
                 throw new ArgumentNullException(nameof(options.LogsPath));
 
-            var serverDllPath = Path.Combine(options.ServerDirectory, "Raven.Server.dll");
+            var serverDllPath = Path.Combine(options.ServerDirectory, "Raven.Server.exe");
             var serverDllFound = File.Exists(serverDllPath);
 
             if (serverDllFound == false)
@@ -28,7 +28,7 @@ namespace Raven.Embedded
                 {
                     // ASP.NET (not Core) AppContext.BaseDirectory is not in 'bin' folder
                     // but NuSpec contentFiles are extracting there
-                    var aspNetServerDllPath = Path.Combine(ServerOptions.AltServerDirectory, "Raven.Server.dll");
+                    var aspNetServerDllPath = Path.Combine(ServerOptions.AltServerDirectory, "Raven.Server.exe");
                     if (File.Exists(aspNetServerDllPath))
                     {
                         serverDllFound = true;
@@ -80,7 +80,6 @@ namespace Raven.Embedded
             }
 
             commandLineArgs.Add($"--ServerUrl={options.ServerUrl}");
-            commandLineArgs.Insert(0, CommandLineArgumentEscaper.EscapeSingleArg(serverDllPath));
 
             if (string.IsNullOrWhiteSpace(options.FrameworkVersion) == false)
                 commandLineArgs.Insert(0, $"--fx-version {options.FrameworkVersion}");
@@ -89,7 +88,7 @@ namespace Raven.Embedded
 
             var processStartInfo = new ProcessStartInfo
             {
-                FileName = options.DotNetPath,
+                FileName = serverDllPath,
                 Arguments = argumentsString,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
